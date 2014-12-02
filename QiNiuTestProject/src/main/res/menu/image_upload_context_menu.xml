@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/carmer"
+        android:title="@string/account_make_pic" />
+    <item
+        android:id="@+id/gallery"
+        android:title="@string/account_pick_pic_from_gallery" />
+
+</menu>
