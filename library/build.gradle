@@ -1,23 +1,20 @@
-import java.util.regex.Matcher
-
 apply plugin: 'com.android.library'
 
-def versionName() {
-    String config = 'library/src/main/java/com/qiniu/android/common/Config.java'
-    String fileContents = new File(config).text
-    Matcher myMatcher = fileContents =~ /VERSION = "(.+)";/
-    String version = myMatcher[0][1]
-    println(version)
-    return version
-}
+//def versionName() {
+//    String config = 'library/src/main/java/com/qiniu/android/common/Config.java'
+//    String fileContents = new File(config).text
+//    Matcher myMatcher = fileContents =~ /VERSION = "(.+)";/
+//    String version = myMatcher[0][1]
+//    println(version)
+//    return version
+//}
 
 def versionNameToCode(String version) {
     String v = version.replaceAll(/\./, '')
     return v.toLong()
 }
 
-String version = versionName()
-int code = versionNameToCode(version)
+int code = versionNameToCode(QINIU_LIB_VERSION)
 
 android {
     compileSdkVersion 21
