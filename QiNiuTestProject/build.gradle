@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: "com.android.application"
 
 android {
     compileSdkVersion 21
@@ -10,6 +10,10 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        buildConfigField "String", "QINIU_ACCECC_KEY", project.getProperty('QINIU_ACCECC_KEY')
+        buildConfigField "String", "QINIU_SECKET_KEY", project.getProperty('QINIU_SECKET_KEY')
+        buildConfigField "String", "QINIU_BITBUCKET_NAME", project.getProperty('QINIU_BITBUCKET_NAME')
+        buildConfigField "String", "QINIU_DOMIN_NAME", project.getProperty('QINIU_DOMIN_NAME')
     }
 
     compileOptions {
@@ -17,16 +21,22 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
     buildTypes {
+        debug {
+            buildConfigField "String", "APP_FLAVOR_NAME", '"MyApp-Flavor3"'
+            minifyEnabled false
+            shrinkResources false
+        }
         release {
+            buildConfigField "String", "APP_FLAVOR_NAME", '"MyApp-Flavor2"'
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':library')
-    compile 'com.android.support:appcompat-v7:21.0.2'
+    compile fileTree(dir: "libs", include: ["*.jar"])
+    compile project(":library")
+    compile "com.android.support:appcompat-v7:21.0.2"
 }
