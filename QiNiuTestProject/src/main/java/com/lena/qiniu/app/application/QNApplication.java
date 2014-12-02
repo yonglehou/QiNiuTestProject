@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.lena.qiniu.app.cache.FileCache;
 import com.lena.qiniu.app.utils.ImageLoaderUtil;
+import com.lena.qiniu.app.utils.LogUtil;
 import com.lena.qiniu.app.utils.ScreenUtil;
 
 /**
@@ -22,5 +23,6 @@ public class QNApplication extends Application {
 
 //        Initial ImageLoader
         ImageLoaderUtil.init(this);
+        LogUtil.openLog();
     }
 }

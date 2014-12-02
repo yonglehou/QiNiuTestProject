@@ -12,15 +12,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lena.qiniu.app.base.BaseActivity;
 import com.lena.qiniu.app.cache.FileCache;
 import com.lena.qiniu.app.utils.ImageLoaderUtil;
+import com.lena.qiniu.app.utils.ImageUploadUtil;
 import com.lena.qiniu.app.utils.ScreenUtil;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.qiniu.android.http.ResponseInfo;
+import com.qiniu.android.storage.UpCancellationSignal;
+import com.qiniu.android.storage.UpCompletionHandler;
+import com.qiniu.android.storage.UpProgressHandler;
+import com.qiniu.android.storage.UploadManager;
+import com.qiniu.android.storage.UploadOptions;
+
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.InjectView;
 
@@ -28,7 +42,7 @@ public class MainActivity extends BaseActivity {
 
     private final int REQUEST_CODE_CARMER = 0X10;
     private final int REQUEST_CODE_GALLERY = 0X11;
-    private final String IMAGE_NAME = "IMAGE_ID_CARD_FRONT";
+    private final String IMAGE_NAME = "IMAGE_NAME";
     private String mImagePath = null;
 
     @InjectView(R.id.imageview)
@@ -37,6 +51,10 @@ public class MainActivity extends BaseActivity {
     Button mUploadImageButton;
     @InjectView(R.id.upload_vedio)
     Button mUploadVedioButton;
+    @InjectView(R.id.progress)
+    TextView mProgressTextView;
+    @InjectView(R.id.imageurl)
+    TextView mImageUrlTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +65,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo
-            menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.setHeaderTitle(R.string.upload_image);
         getMenuInflater().inflate(R.menu.image_upload_context_menu, menu);
@@ -138,6 +155,7 @@ public class MainActivity extends BaseActivity {
                 public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                     hideProgressDialog();
                     mImageView.setImageBitmap(loadedImage);
+                    uploadBitmap(loadedImage);
                 }
 
                 @Override
@@ -147,4 +165,31 @@ public class MainActivity extends BaseActivity {
             });
         }
     }
+
+    private void uploadBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        UploadManager uploadManager = new UploadManager();
+        Map<String, String> stringMap = new HashMap<String, String>();
+        String imageName = IMAGE_NAME + System.currentTimeMillis() + ".jpg";
+        uploadManager.put(byteArray, imageName, ImageUploadUtil.getToken(imageName), new UpCompletionHandler() {
+            @Override
+            public void complete(String key, ResponseInfo info, JSONObject response) {
+                Toast.makeText(MainActivity.this, "complete", Toast.LENGTH_LONG).show();
+                mImageUrlTextView.setText(ImageUploadUtil.buildFinaImagelUrl(key));
+            }
+        }, new UploadOptions(stringMap, "image/jpeg", false, new UpProgressHandler() {
+            @Override
+            public void progress(String key, double percent) {
+                mProgressTextView.setText(percent * 100 + "%");
+            }
+        }, new UpCancellationSignal() {
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
+        }));
+    }
+
 }
