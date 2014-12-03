@@ -33,7 +33,7 @@ local.properties
 *~
 *.swp
 /build
-.gradle
+/gradle
 # Report files
 /*/reports
 /reports
